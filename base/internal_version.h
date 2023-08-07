@@ -16,7 +16,7 @@
 #define SCUMMVM_REVISION
 #endif
 
-#define SCUMMVM_VERSION "2.8.0git"
+#define SCUMMVM_VERSION "2.8.0git-zoom"
 
 #define SCUMMVM_VER_MAJOR 2
 #define SCUMMVM_VER_MINOR 8
