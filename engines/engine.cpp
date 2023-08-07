@@ -280,6 +280,7 @@ void initCommonGFX(bool is3D) {
 bool splash = false;
 
 #include "logo_data.h"
+#include "logo_zoom_data.h"
 
 void splashScreen() {
 	Common::MemoryReadStream stream(logo_data, ARRAYSIZE(logo_data));
@@ -340,14 +341,94 @@ void splashScreen() {
 
 	g_system->updateScreen();
 
-	// Delay 0.6 secs
+	// Delay 2 secs
 	uint time0 = g_system->getMillis();
 	Common::Event event;
 
 	// We must poll an event in order to have the window shown at least on Mac
 	g_system->getEventManager()->pollEvent(event);
 
-	while (time0 + 600 > g_system->getMillis()) {
+	while (time0 + 2000 > g_system->getMillis()) {
+		g_system->delayMillis(10);
+	}
+	g_system->hideOverlay();
+
+	splash = true;
+}
+
+void splashScreenZoom() {
+	Common::String zoomSplashSetting = ConfMan.get("zoom_splash");
+
+	Image::BitmapDecoder bitmap;
+
+	if (ConfMan.get("zoom_splash").equals("white")) {
+		Common::MemoryReadStream stream(logo_zoom_white_data, ARRAYSIZE(logo_zoom_white_data));
+		if (!bitmap.loadStream(stream)) {
+			warning("Error loading logo file");
+			return;
+		}
+	} else {
+		Common::MemoryReadStream stream(logo_zoom_data, ARRAYSIZE(logo_zoom_data));
+		if (!bitmap.loadStream(stream)) {
+			warning("Error loading logo file");
+			return;
+		}
+	}
+
+	g_system->showOverlay();
+	float scaleFactor = g_system->getHiDPIScreenFactor();
+	int16 overlayWidth = g_system->getOverlayWidth();
+	int16 overlayHeight = g_system->getOverlayHeight();
+	int16 scaledW = (int16)(overlayWidth / scaleFactor);
+	int16 scaledH = (int16)(overlayHeight / scaleFactor);
+
+	// Fill background color
+	Graphics::Surface screen;
+	screen.create(scaledW, scaledH, g_system->getOverlayFormat());
+	if (zoomSplashSetting.equals("white")) {
+		screen.fillRect(Common::Rect(screen.w, screen.h), screen.format.ARGBToColor(0xff, 0xff, 0xff, 0xff));
+	} else {
+		screen.fillRect(Common::Rect(screen.w, screen.h), screen.format.ARGBToColor(0xff, 0x00, 0x00, 0x00));
+	}
+
+	// Scale if needed and copy to overlay
+	if (screen.w != overlayWidth) {
+		Graphics::Surface *scaledScreen = screen.scale(overlayWidth, overlayHeight, false);
+		g_system->copyRectToOverlay(scaledScreen->getPixels(), scaledScreen->pitch, 0, 0, scaledScreen->w, scaledScreen->h);
+		scaledScreen->free();
+		delete scaledScreen;
+	} else
+		g_system->copyRectToOverlay(screen.getPixels(), screen.pitch, 0, 0, screen.w, screen.h);
+	screen.free();
+
+	// Draw logo
+	Graphics::Surface *logo = bitmap.getSurface()->convertTo(g_system->getOverlayFormat(), bitmap.getPalette());
+	if (scaleFactor != 1.0f) {
+		Graphics::Surface *tmp = logo->scale(int16(logo->w * scaleFactor), int16(logo->h * scaleFactor), true);
+		logo->free();
+		delete logo;
+		logo = tmp;
+	}
+
+	int lx = MAX((overlayWidth - logo->w) / 2, 0);
+	int ly = MAX((overlayHeight - logo->h) / 2, 0);
+	int lw = MIN<uint16>(logo->w, overlayWidth - lx);
+	int lh = MIN<uint16>(logo->h, overlayHeight - ly);
+
+	g_system->copyRectToOverlay(logo->getPixels(), logo->pitch, lx, ly, lw, lh);
+	logo->free();
+	delete logo;
+
+	g_system->updateScreen();
+
+	// Delay 3.5 secs
+	uint time0 = g_system->getMillis();
+	Common::Event event;
+
+	// We must poll an event in order to have the window shown at least on Mac
+	g_system->getEventManager()->pollEvent(event);
+
+	while (time0 + 3500 > g_system->getMillis()) {
 		g_system->delayMillis(10);
 	}
 	g_system->hideOverlay();
@@ -386,8 +467,12 @@ int initGraphicsAny(const Graphics::ModeWithFormatList &modes, int start) {
 
 		gfxError = g_system->endGFXTransaction();
 
-		if (!splash && !GUI::GuiManager::instance()._launched)
-			splashScreen();
+	if (!splash && !GUI::GuiManager::instance()._launched) {
+		splashScreen();
+		if (ConfMan.hasKey("zoom_splash")) {
+			splashScreenZoom();
+		}
+	}
 
 		if (gfxError == OSystem::kTransactionSuccess)
 			return candidate;
