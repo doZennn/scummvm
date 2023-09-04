@@ -349,7 +349,7 @@ void splashScreenZoom() {
 	if (zoomSplashSetting.equals("white")) {
 		screen.fillRect(Common::Rect(screen.w, screen.h), screen.format.ARGBToColor(0xff, 0xff, 0xff, 0xff));
 	} else {
-		screen.fillRect(Common::Rect(screen.w, screen.h), screen.format.ARGBToColor(0x00, 0x00, 0x00, 0x00));
+		screen.fillRect(Common::Rect(screen.w, screen.h), screen.format.ARGBToColor(0xff, 0x00, 0x00, 0x00));
 	}
 
 	// Scale if needed and copy to overlay
