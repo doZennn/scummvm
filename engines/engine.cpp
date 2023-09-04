@@ -544,6 +544,14 @@ void initGraphics3d(int width, int height) {
 		g_system->setFeatureState(OSystem::kFeatureVSync, ConfMan.getBool("vsync")); // TODO: Replace this with initCommonGFX()
 		g_system->setStretchMode(ConfMan.get("stretch_mode").c_str()); // TODO: Replace this with initCommonGFX()
 	g_system->endGFXTransaction();
+	if (!splash && !GUI::GuiManager::instance()._launched) {
+		Common::Event event;
+		g_system->getEventManager()->pollEvent(event);
+		splashScreen();
+		if (ConfMan.hasKey("zoom_splash")) {
+			splashScreenZoom();
+		}
+	}
 }
 
 void GUIErrorMessageWithURL(const Common::U32String &msg, const char *url) {
