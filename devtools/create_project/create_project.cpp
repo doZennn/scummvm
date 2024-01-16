@@ -1169,6 +1169,7 @@ const Feature s_features[] = {
 	{  "builtin-resources",             "BUILTIN_RESOURCES", false, true,  "include resources (e.g. engine data, fonts) into the binary"},
 	{     "detection-full",                "DETECTION_FULL", false, true,  "Include detection objects for all engines" },
 	{   "detection-static", "USE_DETECTION_FEATURES_STATIC", false, true,  "Static linking of detection objects for engines."},
+	{			   "steam",						"USE_STEAM", false, false, "Steamworks support" },
 };
 
 const Tool s_tools[] = {

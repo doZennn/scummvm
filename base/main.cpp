@@ -98,6 +98,10 @@
 
 #include "gui/dump-all-dialogs.h"
 
+#ifdef USE_STEAM
+#include "backends/steam/steammanager.h"
+#endif
+
 static bool launcherDialog() {
 
 	// Discard any command line options. Those that affect the graphics
@@ -595,6 +599,11 @@ extern "C" int scummvm_main(int argc, const char * const argv[]) {
 	// Init the event manager. As the virtual keyboard is loaded here, it must
 	// take place after the backend is initiated and the screen has been setup
 	system.getEventManager()->init();
+
+	// Set up Steam and events
+	#ifdef USE_STEAM
+		SteamMan.init();
+	#endif
 
 #ifdef ENABLE_EVENTRECORDER
 	// Directly after initializing the event manager, we will initialize our

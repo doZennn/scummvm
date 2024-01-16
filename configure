@@ -180,6 +180,7 @@ _tts=auto
 _gtk=auto
 _fribidi=auto
 _discord=auto
+_steam=no
 _test_cxx11=no
 # Default option behavior yes/no
 _debug_build=auto
@@ -990,6 +991,7 @@ Optional Features:
   --enable-ext-sse2         allow code to use sse2 extensions on x86/amd64
   --enable-ext-avx2         allow code to use avx2 extensions on x86/amd64
   --enable-ext-neon         allow code to use neon extensions on ARM
+  --enable-steam			enable Steamworks API integration via steamshim
 
 Optional Documentation Options:
   --with-manual-version=VERSION version to use when generating the manual (optional)
@@ -1305,6 +1307,8 @@ for ac_option in $@; do
 	--disable-bink)               _bink=no               ;;
 	--enable-discord)             _discord=yes           ;;
 	--disable-discord)            _discord=no            ;;
+	--enable-steam)               _steam=yes             ;;
+	--disable-steam)              _steam=no              ;;
 	--enable-verbose-build)      _verbose_build=yes      ;;
 	--enable-cygwin-build)       _cygwin_build=yes       ;;
 	--enable-plugins)            _dynamic_modules=yes    ;;
@@ -6773,6 +6777,13 @@ else
 	echo "$_imgui"
 fi
 define_in_config_if_yes "$_imgui" 'USE_IMGUI'
+
+#
+# Check for Steamworks
+#
+echocheck "Steamworks"
+define_in_config_if_yes "$_steam" 'USE_STEAM'
+echo "$_steam"
 
 #
 # Enable vkeybd / event recorder

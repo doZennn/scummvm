@@ -1183,6 +1183,7 @@ XcodeProvider::ValueList& XcodeProvider::getResourceFiles(const BuildSetup &setu
 		files.push_back("LICENSES/COPYING.OFL");
 		files.push_back("LICENSES/COPYING.TINYGL");
 		files.push_back("LICENSES/CatharonLicense.txt");
+		files.push_back("LICENSES/COPYING.STEAMSHIM");
 		files.push_back("NEWS.md");
 		files.push_back("README.md");
 

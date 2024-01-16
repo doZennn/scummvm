@@ -39,6 +39,11 @@
 #include "common/savefile.h"
 #include "engines/engine.h"
 
+#ifdef USE_STEAM
+#include "backends/steam/steamshim_child.h"
+#include "backends/steam/steammanager.h"
+#endif
+
 namespace GUI {
 
 #define SCALEVALUE(val) ((val) * g_gui.getScaleFactor())
@@ -1246,6 +1251,10 @@ SavenameDialog::SavenameDialog()
 	_description = new EditTextWidget(this, "SavenameDialog.Description", Common::U32String(), Common::U32String(), 0, kOKCmd);
 
 	_targetSlot = 0;
+
+	#ifdef USE_STEAM
+	STEAMSHIM_IsSteamInBigPictureMode();
+	#endif
 }
 
 void SavenameDialog::setDescription(const Common::U32String &desc) {
@@ -1261,6 +1270,26 @@ void SavenameDialog::open() {
 	setResult(-1);
 
 	_title->setLabel(Common::U32String::format(_("Enter a description for slot %d:"), _targetSlot));
+
+	#ifdef USE_STEAM
+	if (SteamMan.isSteamInBigPictureMode())
+		this->_y = 0;
+		STEAMSHIM_ShowFloatingGamepadTextInput(
+			0,
+			this->getAbsX(),
+			this->getAbsY(),
+			this->getWidth(),
+			this->getHeight()
+		);
+	#endif
+}
+
+void SavenameDialog::reflowLayout() {
+	Dialog::reflowLayout();
+	#ifdef USE_STEAM
+	if (SteamMan.isSteamInBigPictureMode())
+		this->_y = 0;
+	#endif
 }
 
 void SavenameDialog::handleCommand(CommandSender *sender, uint32 cmd, uint32 data) {
@@ -1268,7 +1297,16 @@ void SavenameDialog::handleCommand(CommandSender *sender, uint32 cmd, uint32 dat
 	case kOKCmd:
 		setResult(0);
 		close();
+		#ifdef USE_STEAM
+		STEAMSHIM_DismissFloatingGamepadTextInput();
+		#endif
 		break;
+
+	#ifdef USE_STEAM
+	case kCloseWithResultCmd:
+	case kCloseCmd:
+		STEAMSHIM_DismissFloatingGamepadTextInput();
+	#endif
 
 	default:
 		Dialog::handleCommand(sender, cmd, data);
