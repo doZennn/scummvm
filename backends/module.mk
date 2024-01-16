@@ -67,6 +67,12 @@ MODULE_OBJS += \
 endif
 endif
 
+ifdef USE_STEAM
+MODULE_OBJS += \
+	steam/steamshim_child.o \
+	steam/steammanager.o
+endif
+
 ifdef USE_SCUMMVMDLC
 ifdef USE_LIBCURL
 MODULE_OBJS += \

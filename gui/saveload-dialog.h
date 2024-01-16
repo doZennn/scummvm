@@ -194,6 +194,8 @@ public:
 	void setTargetSlot(int slot) { _targetSlot = slot; }
 
 	void open() override;
+
+	void reflowLayout() override;
 protected:
 	void handleCommand(CommandSender *sender, uint32 cmd, uint32 data) override;
 private:
