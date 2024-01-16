@@ -4766,7 +4766,7 @@ void Runtime::drawFrame() {
 		_system->copyRectToScreen(
 			_steamIcon->getPixels(),
 			_steamIcon->pitch,
-			187,
+			0,
 			height == 480 ? (height - _steamIcon->h - 60) : (height - _steamIcon->h),
 			_steamIcon->w,
 			_steamIcon->h
