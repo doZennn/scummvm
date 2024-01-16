@@ -79,6 +79,7 @@ void addObsidianBugFixes(const MTropolisGameDescription &desc, Hacks &hacks);
 void addObsidianAutoSaves(const MTropolisGameDescription &desc, Hacks &hacks, IAutoSaveProvider *autoSaveProvider);
 void addObsidianSaveMechanism(const MTropolisGameDescription &desc, Hacks &hacks);
 void addObsidianImprovedWidescreen(const MTropolisGameDescription &desc, Hacks &hacks);
+void addObsidianSteamFixes(const MTropolisGameDescription &desc, Hacks &hacks);
 
 void addMTIQuirks(const MTropolisGameDescription &desc, Hacks &hacks);
 

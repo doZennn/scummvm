@@ -1991,6 +1991,11 @@ private:
 #ifdef MTROPOLIS_DEBUG_ENABLE
 	Common::SharedPtr<Debugger> _debugger;
 #endif
+
+	const Graphics::Surface *_steamIcon;
+
+	public:
+		bool _showSteamIcon = false;
 };
 
 struct IModifierContainer : public IInterfaceBase {
@@ -2135,6 +2140,7 @@ public:
 	virtual void onSetPosition(Runtime *runtime, Structural *structural, const Common::Point &oldPt, Common::Point &pt);
 	virtual void onStopPlayingMToon(Structural *structural, bool &visible, bool &stopped, Graphics::ManagedSurface *lastSurf);
 	virtual void onHidden(Structural *structural, bool &visible);
+	virtual void onShown(Structural *structural, bool &visible);
 };
 
 class Structural : public RuntimeObject, public IModifierContainer, public IMessageConsumer, public Debuggable {
@@ -2186,6 +2192,8 @@ public:
 	void setHooks(const Common::SharedPtr<StructuralHooks> &hooks);
 	const Common::SharedPtr<StructuralHooks> &getHooks() const;
 
+	Runtime *getRuntime() const;
+
 #ifdef MTROPOLIS_DEBUG_ENABLE
 	SupportStatus debugGetSupportStatus() const override;
 	const Common::String &debugGetName() const override;
@@ -2206,8 +2214,6 @@ protected:
 	virtual void linkInternalReferences(ObjectLinkingScope *outerScope);
 
 	virtual void onPauseStateChanged();
-
-	Runtime *getRuntime() const;
 
 	Structural *_parent;
 	Common::Array<Common::SharedPtr<Structural> > _children;

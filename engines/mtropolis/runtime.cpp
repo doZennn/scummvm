@@ -24,6 +24,7 @@
 #include "common/random.h"
 #include "common/substream.h"
 #include "common/system.h"
+#include "common/config-manager.h"
 
 #include "graphics/cursorman.h"
 #include "graphics/managed_surface.h"
@@ -34,6 +35,8 @@
 #include "graphics/macgui/macfontmanager.h"
 
 #include "audio/mixer.h"
+
+#include "image/png.h"
 
 #include "mtropolis/runtime.h"
 #include "mtropolis/data.h"
@@ -2992,6 +2995,9 @@ void StructuralHooks::onStopPlayingMToon(Structural *structural, bool &visible, 
 void StructuralHooks::onHidden(Structural *structural, bool &visible) {
 }
 
+void StructuralHooks::onShown(Structural *structural, bool &visible) {
+}
+
 ProjectPresentationSettings::ProjectPresentationSettings() : width(640), height(480), bitsPerPixel(8) {
 }
 
@@ -4330,6 +4336,18 @@ Runtime::Runtime(OSystem *system, Audio::Mixer *mixer, ISaveUIProvider *saveProv
 	_getSetAttribIDsToAttribName[AttributeIDs::kAttribText] = "text";
 	_getSetAttribIDsToAttribName[AttributeIDs::kAttribMasterVolume] = "mastervolume";
 	_getSetAttribIDsToAttribName[AttributeIDs::kAttribUserTimeout] = "usertimeout";
+
+	Common::Path filename = ConfMan.get("path");
+	filename.appendInPlace("menu_overlay.png");
+
+	Common::FSNode fs(filename);
+	Image::PNGDecoder decoder;
+	Common::SeekableReadStream *stream = fs.createReadStream();
+
+	if (!decoder.loadStream(*stream))
+		return;
+
+	_steamIcon = decoder.getSurface()->convertTo(_system->getOverlayFormat(), decoder.getPalette());
 }
 
 Runtime::~Runtime() {
@@ -4743,6 +4761,16 @@ void Runtime::drawFrame() {
 
 		_system->copyRectToScreen(surface.getBasePtr(srcLeft, srcTop), surface.pitch, destLeft, destTop, destRight - destLeft, destBottom - destTop);
 	}
+
+	if (_showSteamIcon)
+		_system->copyRectToScreen(
+			_steamIcon->getPixels(),
+			_steamIcon->pitch,
+			187,
+			height == 480 ? (height - _steamIcon->h - 60) : (height - _steamIcon->h),
+			_steamIcon->w,
+			_steamIcon->h
+		);
 
 	_system->updateScreen();
 
@@ -8173,6 +8201,10 @@ VThreadState VisualElement::consumeCommand(Runtime *runtime, const Common::Share
 	if (Event(EventIDs::kElementShow, 0).respondsTo(msg->getEvent())) {
 		if (!_visible) {
 			_visible = true;
+
+			if (_hooks)
+				_hooks->onShown(this, _visible);
+
 			runtime->setSceneGraphDirty();
 		}
 

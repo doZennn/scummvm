@@ -76,6 +76,24 @@ void Hacks::addSaveLoadMechanismHooks(const Common::SharedPtr<SaveLoadMechanismH
 
 namespace HackSuites {
 
+class ObsidianSteamDeckMenuHooks : public StructuralHooks {
+public:
+	void onHidden(Structural *structural, bool &visible) override;
+	void onShown(Structural *structural, bool &visible) override;
+};
+
+void ObsidianSteamDeckMenuHooks::onHidden(Structural *structural, bool &visible) {
+	if (structural->getName() != "Game_Screen")
+		return;
+	structural->getRuntime()->_showSteamIcon = false;
+}
+
+void ObsidianSteamDeckMenuHooks::onShown(Structural *structural, bool &visible) {
+	if (structural->getName() != "Game_Screen")
+		return;
+	structural->getRuntime()->_showSteamIcon = true;
+}
+
 class ObsidianCorruptedAirTowerTransitionFix : public AssetHooks {
 public:
 	void onLoaded(Asset *asset, const Common::String &name) override;
@@ -398,6 +416,10 @@ void ObsidianSaveScreenshotHooks::onSceneTransitionSetup(Runtime *runtime, const
 	} else {
 		runtime->setSaveScreenshotOverride(Common::SharedPtr<Graphics::ManagedSurface>());
 	}
+}
+
+void addObsidianSteamFixes(const MTropolisGameDescription &desc, Hacks &hacks) {
+	hacks.addStructuralHooks(0x48180, Common::SharedPtr<StructuralHooks>(new ObsidianSteamDeckMenuHooks()));
 }
 
 void addObsidianQuirks(const MTropolisGameDescription &desc, Hacks &hacks) {

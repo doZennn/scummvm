@@ -152,6 +152,8 @@ Common::Error MTropolisEngine::run() {
 		HackSuites::addObsidianBugFixes(*_gameDescription, _runtime->getHacks());
 		HackSuites::addObsidianSaveMechanism(*_gameDescription, _runtime->getHacks());
 
+		HackSuites::addObsidianSteamFixes(*_gameDescription, _runtime->getHacks());
+
 		if (ConfMan.getBool("mtropolis_mod_auto_save_at_checkpoints"))
 			HackSuites::addObsidianAutoSaves(*_gameDescription, _runtime->getHacks(), this);
 
