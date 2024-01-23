@@ -4338,7 +4338,7 @@ Runtime::Runtime(OSystem *system, Audio::Mixer *mixer, ISaveUIProvider *saveProv
 	_getSetAttribIDsToAttribName[AttributeIDs::kAttribUserTimeout] = "usertimeout";
 
 	Common::Path filename = ConfMan.get("path");
-	filename.appendInPlace("menu_overlay.png");
+	filename.joinInPlace("menu_overlay.png");
 
 	Common::FSNode fs(filename);
 	Image::PNGDecoder decoder;
